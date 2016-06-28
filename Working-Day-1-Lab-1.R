@@ -89,4 +89,3 @@ gradedata %>%
 #Create histogram for semster GPA
 hist(gradedata$SEM_GPA, main='Histogram of Semester GPA',
      xlim=c(0,4))
-
