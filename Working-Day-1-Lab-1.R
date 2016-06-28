@@ -1,5 +1,5 @@
 #LASI 2016 Feature Engineering Workshop
-#DAY 1 Lab - June 27, 2016
+#DAY 1 Lab 1 - June 27, 2016
 #Introduction to R and dplyr
 #Meen Chul Kim
 
