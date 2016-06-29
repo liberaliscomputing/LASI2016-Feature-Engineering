@@ -48,5 +48,55 @@ plot <- gradedata2 %>%
   group_by(SECTION) %>%
   summarise(mean=mean(GRADE, na.rm=TRUE))
 plot <- plot %>% select(mean)
-barplot(plot$mean, main='Plot of Success Rates',
-        xlab='Section')
+barplot(plot$mean, main='Plot of Success Rates', xlab='Section')
+
+#What is the personality of passing, i.e., our baseline?
+gradedata2 %>% summarise(mean=mean(GRADE, na.rm=TRUE))
+
+#Run our null model random intercepts
+modelnull <- glmer(GRADE ~ (1|SECTION), gradedata2, binomial(link = 'logit'))
+summary(modelnull)
+
+#Convert to odds ratio e^log(P/(1-P)) == P/(1-P) == odds
+modelnullor <- exp(fixef(modelnull))
+modelnullor
+
+#Convert to predicted probability == odds/(1+odds)
+modelnullpr <- modelnullor/(1+modelnullor)
+modelnullpr
+
+#Run model 1: GPA predictor with random intercepts
+model1 <- glmer(GRADE ~ SEM_GPA + (1|SECTION), gradedata2, binomial(link = 'logit'))
+summary(model1)
+
+#Convert to odds ratio e^log(P/(1-P)) == P/(1-P) == odds
+model1or <- exp(fixef(model1))
+model1or
+
+#Convert to predicted probability == odds/(1+odds)
+model1pr <- model1or/(1+model1or)
+model1pr
+
+#Grand mean centering for GPA and FEMALE
+#Identify grand means
+gm2 <- gradedata2 %>% summarise(gm2_gpa=mean(SEM_GPA, na.rm=TRUE),
+                                gm2_female=mean(FEMALE, na.rm=TRUE))
+
+#Subtract grand means
+gradedata2 <- gradedata2 %>% mutate(gm1_gpa = SEM_GPA - gm2$gm2_gpa,
+                                    gm1_female = FEMALE - gm2$gm2_female)
+
+#Run model 2 with grand mean centered predictors
+model2 <- glmer(GRADE ~ gm1_gpa + gm1_female + (1|SECTION), gradedata2, binomial(link = 'logit'))
+summary(model2)
+
+#Convert to odds ratio e^log(P/(1-P)) == P/(1-P) == odds
+model2or <- exp(fixef(model2))
+model2or
+
+#Convert to predicted probability == odds/(1+odds)
+model2pr <- model2or/(1+model2or)
+model2pr
+
+#Save loggen
+write_csv(gradedata2, 'gradedata3.csv')

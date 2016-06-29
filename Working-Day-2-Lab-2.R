@@ -59,5 +59,3 @@ loggen <- loggen %>%
   
 #Save loggen data frame
 write_csv(loggen, 'loggen.csv')
-
-
